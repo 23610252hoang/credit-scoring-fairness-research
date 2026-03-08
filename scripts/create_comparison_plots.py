@@ -28,8 +28,8 @@ def create_comparison_plots():
     summary_df = pd.read_csv('results/exp_v1_summary.csv')
     all_folds_df = pd.read_csv('results/exp_v1_all_folds.csv')
     
-    print(f"✅ Loaded summary for {len(summary_df)} models")
-    print(f"✅ Loaded {len(all_folds_df)} fold results")
+    print(f" Loaded summary for {len(summary_df)} models")
+    print(f" Loaded {len(all_folds_df)} fold results")
     
     # 出力ディレクトリ
     os.makedirs('figs', exist_ok=True)
@@ -37,7 +37,7 @@ def create_comparison_plots():
     # ==========================================
     # 図1: Accuracy vs Fairness Scatter Plot
     # ==========================================
-    print("\n📊 Creating Figure 1: Accuracy vs Fairness...")
+    print("\n Creating Figure 1: Accuracy vs Fairness...")
     
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
     fig.suptitle('Model Comparison: Accuracy vs Fairness Trade-off', 
@@ -136,7 +136,7 @@ def create_comparison_plots():
     # ==========================================
     # 図2: モデル別性能比較 (Bar Chart)
     # ==========================================
-    print("\n📊 Creating Figure 2: Model Performance Comparison...")
+    print("\n Creating Figure 2: Model Performance Comparison...")
     
     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
     fig.suptitle('Model Performance Comparison', fontsize=16, fontweight='bold')
@@ -221,12 +221,12 @@ def create_comparison_plots():
     
     plt.tight_layout()
     plt.savefig('figs/fig2_model_comparison.png', dpi=300, bbox_inches='tight')
-    print("✅ Saved: figs/fig2_model_comparison.png")
+    print(" Saved: figs/fig2_model_comparison.png")
     
     # ==========================================
     # 図3: Fold別の分布 (Box Plot)
     # ==========================================
-    print("\n📊 Creating Figure 3: Fold-wise Distribution...")
+    print("\n Creating Figure 3: Fold-wise Distribution...")
     
     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
     fig.suptitle('Cross-Validation Stability Analysis', fontsize=16, fontweight='bold')
@@ -267,10 +267,10 @@ def create_comparison_plots():
     
     plt.tight_layout()
     plt.savefig('figs/fig3_cv_stability.png', dpi=300, bbox_inches='tight')
-    print("✅ Saved: figs/fig3_cv_stability.png")
+    print(" Saved: figs/fig3_cv_stability.png")
     
     print("\n" + "="*60)
-    print("✅ ALL PLOTS CREATED SUCCESSFULLY!")
+    print(" ALL PLOTS CREATED SUCCESSFULLY!")
     print("="*60)
 
 if __name__ == "__main__":

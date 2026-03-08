@@ -1,24 +1,4 @@
+data/*.csv
+results/*.csv
+figs/*.png
 __pycache__/
-*.pyc
-.Python
-venv/
-env/
-.venv
-.ipynb_checkpoints/
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
-
-# Generated files
-data/
-results/
-figs/
-
-# Keep structure
-!data/.gitkeep
-!results/.gitkeep
-!figs/.gitkeep
-
-# Docs can be tracked
-!docs/

@@ -1,0 +1,12 @@
+============================================================
+WEEK 1 VERIFICATION - FIXED VERSION
+============================================================
+
+[1] Python version check...
+Traceback (most recent call last):
+  File "C:\nguyen-credit-fairness-2026\scripts\verify_week1.py", line 123, in <module>
+    check_python(),
+    ^^^^^^^^^^^^^^
+  File "C:\nguyen-credit-fairness-2026\scripts\verify_week1.py", line 16, in check_python
+    print(f"\u2713 OK: Python {v.major}.{v.minor}.{v.micro}")
+UnicodeEncodeError: 'cp932' codec can't encode character '\u2713' in position 0: illegal multibyte sequence

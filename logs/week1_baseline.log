@@ -1,0 +1,58 @@
+============================================================
+Week 1: Baseline - DATA LEAKAGE FIXED
+============================================================
+
+Loading data...
+Data shape: (1000, 25)
+Columns: ['Attribute1', 'Attribute2', 'Attribute3', 'Attribute4', 'Attribute5', 'Attribute6', 'Attribute7', 'Attribute8', 'Attribute9', 'Attribute10', 'Attribute11', 'Attribute12', 'Attribute13', 'Attribute14', 'Attribute15', 'Attribute16', 'Attribute17', 'Attribute18', 'Attribute19', 'Attribute20', 'target', 'age_binary', 'age_group', 'sex_binary', 'sex_group']
+
+Target distribution:
+target
+1    700
+0    300
+Name: count, dtype: int64
+
+Excluding: ['target']
+Features (24): ['Attribute1', 'Attribute2', 'Attribute3', 'Attribute4', 'Attribute5']...
+
+Encoding categorical variables...
+Categorical columns: ['Attribute1', 'Attribute3', 'Attribute4', 'Attribute6', 'Attribute7', 'Attribute9', 'Attribute10', 'Attribute12', 'Attribute14', 'Attribute15', 'Attribute17', 'Attribute19', 'Attribute20', 'age_group', 'sex_group']
+OK: Encoded 15 categorical columns
+
+X dtypes:
+int32    15
+int64     9
+Name: count, dtype: int64
+
+X shape: (1000, 24)
+y shape: (1000,)
+
+Train: (800, 24), Test: (200, 24)
+OK: Features scaled
+
+Training Logistic Regression...
+
+========================================
+RESULTS
+========================================
+Test Accuracy:  0.7250
+Test AUC:       0.7564
+
+OK: Accuracy in realistic range
+
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.54      0.52      0.53        60
+           1       0.80      0.81      0.81       140
+
+    accuracy                           0.73       200
+   macro avg       0.67      0.67      0.67       200
+weighted avg       0.72      0.72      0.72       200
+
+
+OK: Saved results/baseline_results.csv
+
+============================================================
+DONE - Data leakage check: PASSED
+============================================================

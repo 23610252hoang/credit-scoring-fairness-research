@@ -1,0 +1,9 @@
+============================================================
+WEEK 2: MODEL COMPARISON WITH CROSS-VALIDATION
+============================================================
+Traceback (most recent call last):
+  File "C:\nguyen-credit-fairness-2026\scripts\run_experiment.py", line 253, in <module>
+    main()
+  File "C:\nguyen-credit-fairness-2026\scripts\run_experiment.py", line 173, in main
+    print("\n\U0001f4e5 Loading data...")
+UnicodeEncodeError: 'cp932' codec can't encode character '\U0001f4e5' in position 2: illegal multibyte sequence

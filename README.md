@@ -1,288 +1,223 @@
 # 与信スコアリングにおける公平性分析
 
-**学生:** Hoang Nguyen  
+**学生:** Hoang Nguyen (グエン・キム・ホアン)  
+**学籍番号:** 23610252  
 **指導教員:** 池田教授  
-**期間:** 2026年2月 〜 2026年3月
+**大学:** 大和大学 情報学部  
+**期間:** 2026年2月 〜 2026年5月
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-Academic-green.svg)]()
-[![Status](https://img.shields.io/badge/進捗-Week%203%20完了-brightgreen.svg)]()
+[![Status](https://img.shields.io/badge/進捗-Step%206%20完了-brightgreen.svg)]()
 
 ---
 
-## 📋 プロジェクト概要
+## 研究概要
 
 本研究では、機械学習モデルにおける**予測精度と公平性のトレードオフ**を分析します。  
-German Credit Datasetを使用し、**年齢**と**性別**に関するバイアスを定量的に評価します。
+German Credit Dataset を使用し、**年齢**と**性別**に関するバイアスを定量的に評価します。  
+さらに、**Reweighing による公平性改善**（事前処理による緩和手法）と、  
+**South German Credit Dataset による汎化性の検証**まで実施しています。
 
-### 🎯 研究目的
+### 研究課題（RQ）
+
+> 「与信スコアリングモデルにおいて、精度を維持しながらバイアスを緩和できるか？  
+>  また、その効果はデータセットをまたいで汎化するか？」
+
+---
+
+## 研究目的と進捗
 
 | # | 目的 | 状況 |
 |---|------|------|
-| 1 | 与信スコアリングモデルの構築（LR, RF, XGBoost） | ✅ 完了 |
-| 2 | 公平性指標（Demographic Parity, Equal Opportunity）の評価 | ✅ 完了 |
-| 3 | 5-fold CVによる精度・公平性の安定性検証 | ✅ 完了 |
-| 4 | SHAP値によるバイアス原因の特定と解釈 | ✅ 完了 |
-| 5 | 最終報告書・ポスター作成 | ⏳ Week 4 |
+| 1 | ベースラインモデル構築（LR, RF, XGBoost）+ データリーク修正 | ✅ 完了 |
+| 2 | 公平性指標（DP, EO）の評価・5-fold CV による安定性検証 | ✅ 完了 |
+| 3 | SHAP 値によるバイアス原因の特定と解釈 | ✅ 完了 |
+| 4 | Reweighing による緩和手法の実装と効果検証 | ✅ 完了 |
+| 5 | XGBoost の混在結果に関する相互作用分析 | ✅ 完了 |
+| 6 | South German Credit による汎化性の検証 | ✅ 完了 |
 
 ---
 
-## 📊 データセット
+## データセット
 
-| 項目 | 内容 |
-|------|------|
-| **名称** | German Credit Data |
-| **ソース** | [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/statlog+(german+credit+data)) |
-| **サンプル数** | 1,000 |
-| **特徴量数** | 20（数値: 7, カテゴリカル: 13） |
-| **クラス分布** | Good credit 70% / Bad credit 30% |
-| **保護属性** | 年齢（Young: ≤25歳 / Older: >25歳）, 性別（Male / Female） |
+| 項目 | German Credit | South German Credit |
+|------|--------------|---------------------|
+| **ソース** | Hofmann (1994), UCI | Groemping (2019), UCI |
+| **サンプル数** | 1,000 | 1,000 |
+| **特徴量数** | 20 | 18 |
+| **クラス分布** | Good 70% / Bad 30% | Good 70% / Bad 30% |
+| **保護属性** | 年齢（age_binary: ≥40 = Old）, 性別（sex_binary） | 同左 |
+| **備考** | 広く使用される標準データセット | famges=2 のコーディングに注意 |
 
 ---
 
-## 🚀 クイックスタート
+## クイックスタート
+
+### 環境構築
 
 ```bash
-# リポジトリをクローン
 git clone https://github.com/23610252hoang/hoang-credut-fairness-2026.git
 cd hoang-credut-fairness-2026
 
-# 依存ライブラリをインストール
-pip install -r requirement.txt
+# Python 3.11 推奨
+conda create -n credit python=3.11
+conda activate credit
+pip install -r requirements.txt
+```
 
-# Week 1: データ前処理 + ベースライン
-python scripts/step1_download_data_FIXED.py
-python scripts/step3_baseline_FIXED.py
+### 実行順序
 
-# Week 2: 3モデル比較 + 5-fold CV
+```bash
+# Step 1-3: ベースライン（データ前処理 → モデル比較 → SHAP）
+python scripts/fix_data.py
+python scripts/step3_baseline_FIXED_v2.py
 python scripts/run_experiment.py
-
-# Week 3: SHAP解析
 python scripts/week3_shap_analysis.py
+
+# Step 4: 公平性分析
+python scripts/step4_fairness_analysis.py
+
+# Step 5: Reweighing 緩和手法
+python scripts/step5_reweighing_mitigation.py
+
+# Step 5b: XGBoost 混在結果の相互作用分析
+python scripts/step5b_attribute_interaction_analysis.py
+
+# Step 6: South German Credit による汎化性検証
+python scripts/step6_south_german_credit.py
 ```
 
 ---
 
-## 📈 全週の実験結果
+## 実験結果
 
-> 公平性閾値: **DP ≤ 10%**, **EO ≤ 10%**  
-> ✅ 閾値以下（公平）　⚠️ 閾値超過
+### Step 1-2: ベースライン + モデル比較（5-Fold CV）
 
----
-
-### Week 1 — ベースライン（Logistic Regression・単発評価）
-
-> **目的:** モデルの動作確認と再現性の確保
-
-| 指標 | 値 | 判定 |
-|------|----|------|
-| Train Accuracy | 77.0% | — |
-| **Test Accuracy** | **77.7%** | — |
-| **AUC** | **79.8%** | — |
-| DP\_Age | 1.54% | ✅ |
-| EO\_Age | 2.94% | ✅ |
-| DP\_Sex | 4.17% | ✅ |
-| EO\_Sex | 0.72% | ✅ |
-
-**Week 1 の観察:**
-- 全公平性指標が閾値10%以下を達成
-- ただし単発評価のため、結果の安定性は未検証
-- → Week 2でCross-Validationを実施して信頼性を検証
-
----
-
-### Week 2 — モデル比較（Stratified 5-Fold Cross-Validation）
-
-> **目的:** 3モデルの比較と結果の安定性・ばらつきの定量化
-
-#### 表2: exp\_v1 結果（平均 ± 標準偏差）
+> 公平性閾値: **DP ≤ 10%**, **EO ≤ 10%**
 
 | モデル | Accuracy | AUC | DP\_Age | EO\_Age | DP\_Sex | EO\_Sex |
 |--------|----------|-----|---------|---------|---------|---------|
-| **Logistic Regression** | 76.3±2.6% | 78.3±2.2% | 5.0±4.7% ✅ | 7.8±3.3% ✅ | 6.1±4.0% ✅ | 5.8±3.9% ✅ |
-| **Random Forest** | 75.9±1.2% | 79.1±2.9% | 5.9±4.3% ✅ | 8.5±2.0% ✅ | 3.1±2.5% ✅ | 2.9±2.2% ✅ |
+| Logistic Regression | 76.3±2.6% | 78.3±2.2% | 5.0±4.7% ✅ | 7.8±3.3% ✅ | 6.1±4.0% ✅ | 5.8±3.9% ✅ |
+| Random Forest | 75.9±1.2% | 79.1±2.9% | 5.9±4.3% ✅ | 8.5±2.0% ✅ | 3.1±2.5% ✅ | 2.9±2.2% ✅ |
 | **XGBoost** | **77.8±2.5%** | 78.4±3.1% | 6.3±5.7% ✅ | 7.2±2.9% ✅ | **3.0±3.8%** ✅ | 3.5±3.4% ✅ |
 
-#### fold別詳細（全15件）
-
-| Fold | Accuracy | AUC | DP\_Age | DP\_Sex | Model |
-|------|----------|-----|---------|---------|-------|
-| 1 | 78.5% | 78.9% | 4.1% | 9.3% | Logistic Regression |
-| 2 | 73.5% | 74.8% | 8.9% | 3.5% | Logistic Regression |
-| 3 | 73.5% | 77.8% | 0.7% | 3.3% | Logistic Regression |
-| 4 | 78.0% | 80.4% | 10.8% | 11.7% | Logistic Regression |
-| 5 | 78.0% | 79.5% | 0.5% | 2.9% | Logistic Regression |
-| 1 | 76.5% | 81.4% | 1.8% | 7.4% | Random Forest |
-| 2 | 74.5% | 75.7% | 11.7% | 1.6% | Random Forest |
-| 3 | 75.0% | 77.2% | 1.6% | 1.3% | Random Forest |
-| 4 | 77.5% | 82.8% | 8.4% | 3.3% | Random Forest |
-| 5 | 76.0% | 78.4% | 5.7% | 2.2% | Random Forest |
-| 1 | 76.0% | 77.9% | 0.0% | 0.2% | XGBoost |
-| 2 | 76.0% | 74.5% | 13.6% | 0.6% | XGBoost |
-| 3 | 76.0% | 76.6% | 3.7% | 2.1% | XGBoost |
-| 4 | 80.0% | 81.1% | 10.8% | 9.6% | XGBoost |
-| 5 | 81.0% | 82.0% | 3.3% | 2.7% | XGBoost |
-
-**Week 2 の主要な発見:**
-- ✅ **全モデルの平均値が公平性閾値（10%）以下を達成**
-- ✅ **XGBoostが最高精度（77.8%）かつ最低性別バイアス（DP\_Sex: 3.0%）**
-- ✅ **Random Forestが最も安定（Accuracy std: ±1.2%のみ）**
-- ⚠️ **Week 1の単発評価はCV平均と乖離**（DP\_Age: 1.54% → 5.0〜6.3%）— 単発評価の危険性を示唆
-- ⚠️ **年齢バイアス（DP\_Age）の変動が大きい**（std ≈ 4〜6%）→ Week 3でSHAP解析により原因特定
+**主な発見:** 本データセット・本条件下では、精度と公平性のトレードオフは観察されなかった。XGBoost が最高精度かつ最低の性別バイアスを達成。
 
 ---
 
-### Week 3 — SHAP解析・バイアス原因の特定
+### Step 3: SHAP による特徴量重要度
 
-> **目的:** どの特徴量がバイアスを引き起こしているかを特定
+| 順位 | 特徴量 | 英語名 | SHAP 値 | バイアスとの関連 |
+|------|--------|--------|---------|----------------|
+| 1 | Attribute1 | checking\_status | 0.791 | 年齢・性別間で口座状態に差 |
+| 2 | Attribute5 | credit\_amount | 0.513 | 若年層は融資額が構造的に少ない |
+| 3 | Attribute2 | duration | 0.394 | 年齢と返済期間に相関あり |
+| **7** | **Attribute13** | **age** | **0.260** | **保護属性の直接代理変数** |
+| 14 | Attribute9 | personal\_status | 0.097 | 性別情報を直接含む |
 
-#### SHAP Feature Importance（XGBoostベース・全20特徴量）
-
-| 順位 | 特徴量 | 英語名 | SHAP値 | バイアスとの関連 |
-|------|--------|--------|--------|----------------|
-| 🥇 1 | Attribute1 | checking\_status（当座預金残高） | 0.7908 | 年齢・性別間で口座状態に差 |
-| 🥈 2 | Attribute5 | credit\_amount（借入金額） | 0.5128 | 若年層は融資額が構造的に少ない |
-| 🥉 3 | Attribute2 | duration（返済期間） | 0.3937 | 年齢と返済期間に相関あり |
-| 4 | Attribute6 | savings\_status（貯蓄残高） | 0.3638 | 年齢別の貯蓄傾向が異なる |
-| 5 | Attribute4 | purpose（借入目的） | 0.3340 | — |
-| 6 | Attribute3 | credit\_history（信用履歴） | 0.3321 | 若年層は履歴が短い |
-| **7** | **Attribute13** | **age（年齢）** | **0.2600** | **⚠️ 保護属性の直接代理変数** |
-| 8 | Attribute7 | employment（雇用期間） | 0.1621 | 若年層は雇用歴が短い |
-| 9 | Attribute11 | residence\_since（現住所年数） | 0.1600 | — |
-| 10 | Attribute12 | property\_magnitude（財産・担保） | 0.1579 | — |
-| 11 | Attribute14 | other\_payment\_plans（他返済プラン） | 0.1528 | — |
-| 12 | Attribute15 | housing（住居種別） | 0.1024 | — |
-| 13 | Attribute10 | other\_parties（他の保証人） | 0.1016 | — |
-| 14 | Attribute9 | personal\_status（性別・婚姻状況） | 0.0970 | **⚠️ 性別情報を直接含む** |
-| 15 | Attribute20 | foreign\_worker（外国人労働者） | 0.0588 | — |
-| 16 | Attribute8 | installment\_rate（返済率） | 0.0557 | — |
-| 17 | Attribute17 | job（職業種別） | 0.0476 | — |
-| 18 | Attribute19 | own\_telephone（電話保有） | 0.0459 | — |
-| 19 | Attribute18 | num\_dependents（扶養家族数） | 0.0406 | — |
-| 20 | Attribute16 | existing\_credits（既存クレジット数） | 0.0302 | — |
-
-**Week 3 の主要な発見:**
-- ✅ **バイアスの主因は `checking_status`（0.79）と `credit_amount`（0.51）**
-  - 若年層は当座預金残高が少なく、融資額も小さい → スコア低下
-- ✅ **`age`（Attribute13, SHAP=0.26）が7位** — 保護属性が直接的な代理変数として機能
-- ✅ **`personal_status`（Attribute9, SHAP=0.097）に性別情報が直接含まれる**
-  - → Tree-basedモデルが性別バイアスを緩和しにくい要因
-- ✅ **Tree-basedモデルのDP\_Sex優位性（LR: 6.1% vs XGBoost: 3.0%）の解明**
-  - 非線形な特徴量組み合わせにより、単純な性別相関が分散される
+**主な発見:** バイアスはモデルではなく、社会的不平等を反映したデータ構造に内在する。
 
 ---
 
-## 🔍 週をまたいだ重要な発見
+### Step 5: Reweighing 緩和手法（Kamiran & Calders, 2012）
 
-### 1️⃣ 単発評価 vs Cross-Validation の乖離
+Reweighing はサンプルに重みを付与することで保護属性とラベルの統計的依存を除去する事前処理手法。追加ライブラリ不要、スクラッチ実装。
 
-```
-Week 1（単発）:   DP_Age = 1.54%  ← 過度に楽観的
-Week 2（5-fold）: DP_Age = 5.0〜6.3%  ← 実態を反映
+**German Credit Dataset での結果（Δ = Reweighing − Baseline）:**
 
-→ 結論: 単発評価は "lucky split" の可能性あり
-         公平性評価には必ずCross-Validationを使用すること
-```
+| モデル | Acc Δ | DP\_sex Δ | EO\_sex Δ | DP\_age Δ | EO\_age Δ |
+|--------|-------|-----------|-----------|-----------|-----------|
+| Logistic Regression | −0.001 | −0.002 | −0.003 | −0.001 | −0.002 |
+| **Random Forest** | **+0.020** | **−0.024** | **−0.013** | −0.011 | **−0.030** |
+| XGBoost | −0.001 | +0.017 ⚠️ | +0.016 ⚠️ | −0.011 | −0.013 |
 
-### 2️⃣ 精度と公平性のトレードオフは存在しない
-
-```
-XGBoost: 最高精度（77.8%）AND 最低性別バイアス（DP_Sex: 3.0%）
-
-❌ 仮説: 精度↑ → 公平性↓（トレードオフ）
-✅ 実際: 精度と公平性は両立可能（このデータセットにおいて）
-
-→ 原因: German Credit Datasetの品質が高く、
-         公平性を損なわずに精度向上が可能
-```
-
-### 3️⃣ バイアスはデータ構造に起因
-
-```
-SHAP分析結果:
-  checking_status（0.79）← 年齢・性別間で口座状態に差
-  credit_amount（0.51）  ← 若年層の融資額が構造的に少ない
-  age（0.26）            ← 保護属性が直接代理変数として機能
-
-→ 結論: バイアスはモデルではなく、
-         社会的不平等を反映したデータに内在する
-```
+- **Random Forest**: DP\_sex が 52% 減少（0.046→0.022）、精度も +2% 向上 — トレードオフなし
+- **XGBoost**: 性別公平性がわずかに悪化（+0.017）、年齢公平性は改善
 
 ---
 
-## 📂 ディレクトリ構造
+### Step 5b: XGBoost 混在結果の原因分析
+
+XGBoost の DP\_sex 悪化（+0.017）を 3 仮説で検証:
+
+| 仮説 | 内容 | 結果 |
+|------|------|------|
+| E1: 重みシフトによる age 分布の歪み | Reweighing が age グループの有効サンプル数を変化させる | **否定**: 変化量 < 0.3%（ほぼ無影響） |
+| **E2: 高分散ノイズ** | N=1000 での公平性推定値は高分散 | **支持**: std が重複（DP\_sex baseline: 0.039±0.030, reweighing: 0.056±0.025）→ 統計的に有意でない |
+| E3: 特徴量相互作用カップリング | XGBoost の木構造が sex/age を間接的に結合 | **否定**: 最大 delta = 0.008（微小） |
+
+**結論:** XGBoost の DP\_sex 悪化は統計的ノイズであり、実質的なトレードオフを示すものではない。
+
+---
+
+### Step 6: South German Credit による汎化性検証
+
+**クロスデータセット比較（ΔDP\_sex の方向一致性）:**
+
+| モデル | German Credit | South German | 汎化? |
+|--------|--------------|--------------|-------|
+| Logistic Regression | −0.002 ✅ | −0.005 ✅ | ✅ 一致 |
+| Random Forest | −0.024 ✅ | +0.009 ⚠️ | ⚠️ 不一致 |
+| XGBoost | +0.017 (noise) | +0.007 (noise) | ✅ パターン一致 |
+
+- **LR**: 両データセットで一貫した改善 → 結論が汎化する
+- **RF**: German Credit の劇的改善が South German では再現されない  
+  → 原因: famges=2 の曖昧コーディング（Female/Male 混在）、グループ比率の差異（Female: 57% vs 40%）
+- **XGBoost**: 両データセットで混在パターン → Step 5b の解釈が汎化
+
+---
+
+## ディレクトリ構造
 
 ```
 hoang-credut-fairness-2026/
 ├── README.md
-├── requirement.txt
+├── requirements.txt
 ├── .gitignore
 │
 ├── scripts/
-│   ├── step1_download_data_FIXED.py    # Week 1: データ前処理
-│   ├── step2_visualize.py              # Week 1: EDA
-│   ├── step3_baseline_FIXED.py         # Week 1: Logistic Regression
-│   ├── run_experiment.py               # Week 2: 3モデル + 5-fold CV
-│   ├── create_comparison_plots.py      # Week 2: 可視化
-│   └── week3_shap_analysis.py          # Week 3: SHAP解析
+│   ├── fix_data.py                           # データ前処理
+│   ├── step3_baseline_FIXED_v2.py            # Step 1: LR ベースライン
+│   ├── step4_fairness_analysis.py            # Step 2: 公平性分析
+│   ├── run_experiment.py                     # Step 2: 3 モデル + 5-fold CV
+│   ├── week3_shap_analysis.py                # Step 3: SHAP 解析
+│   ├── step5_reweighing_mitigation.py        # Step 5: Reweighing 緩和手法 ★
+│   ├── step5b_attribute_interaction_analysis.py  # Step 5b: 相互作用分析 ★
+│   └── step6_south_german_credit.py          # Step 6: 汎化性検証 ★
 │
 ├── data/
-│   └── german_credit_processed.csv     # 前処理済みデータ（gitignore）
+│   ├── german_credit_processed.csv           # German Credit（前処理済み）
+│   └── south_german_credit_processed.csv     # South German Credit（Step 6 生成）
 │
 ├── results/
-│   ├── baseline_results_corrected.csv  # Week 1: LRベースライン結果
-│   ├── exp_v1_summary.csv              # Week 2: 3モデル平均±SD
-│   ├── exp_v1_all_folds.csv            # Week 2: 全15fold詳細
-│   └── shap_feature_importance.csv     # Week 3: SHAP重要度（全20特徴量）
+│   ├── exp_v1_summary.csv                    # Step 2: モデル比較サマリー
+│   ├── exp_v1_all_folds.csv                  # Step 2: fold 別詳細
+│   ├── shap_feature_importance.csv           # Step 3: SHAP 重要度
+│   ├── mitigation_summary.csv                # Step 5: Reweighing サマリー
+│   ├── step5b_fold_comparison.csv            # Step 5b: fold 別 DP 比較
+│   ├── step6_south_german_summary.csv        # Step 6: South German サマリー
+│   └── step6_cross_dataset_comparison.csv    # Step 6: クロスデータセット比較
 │
 ├── figs/
-│   ├── eda_comprehensive.png           # Week 1: 探索的データ分析
-│   ├── fig1_accuracy_vs_fairness.png   # Week 2: 精度 vs 公平性
-│   ├── fig2_model_comparison.png       # Week 2: モデル比較
-│   ├── fig2_shap_bar.png               # Week 3: SHAP棒グラフ
-│   ├── fig2_shap_bar_improved.png      # Week 3: SHAP棒グラフ（改善版）
-│   ├── fig2_shap_summary.png           # Week 3: SHAPサマリープロット
-│   ├── fig3_cv_stability.png           # Week 2: CV安定性
-│   ├── fig3_fairness_metrics_table.png # Week 3: 公平性指標表
-│   ├── fig3_group_score_analysis.png   # Week 3: グループ別スコア分析
-│   ├── fig3_group_shap_distribution.png# Week 3: グループ別SHAP分布
-│   ├── fig3_score_distribution.png     # Week 3: スコア分布
-│   └── shap_dependence_plots.png       # Week 3: SHAP依存プロット
+│   ├── fig2_model_comparison.png             # Step 2: モデル比較
+│   ├── fig2_shap_bar_improved.png            # Step 3: SHAP 重要度
+│   ├── fig_mitigation_comparison.png         # Step 5: Reweighing 効果
+│   ├── fig5b_interaction_analysis.png        # Step 5b: 相互作用分析
+│   └── fig6_cross_dataset_comparison.png     # Step 6: クロスデータセット
 │
-└── docs/
-    ├── bias_hypothesis_report.md       # Week 3: バイアス仮説レポート
-    └── README_GITHUB_TEMPLATE.md
+├── docs/
+│   ├── weekly_report_week1.md                # Week 1 進捗報告
+│   └── bias_hypothesis_report.md             # バイアス仮説レポート
+│
+└── poster/
+    ├── 23610252_NGUYENKIMHOANG 0329 ポスター.pptx
+    └── poster_FINAL.pdf
 ```
 
 ---
 
-## 📉 主要な図
-
-### 図1: Accuracy vs Fairness（Week 2）
-![fig1](figs/fig1_accuracy_vs_fairness.png)
-
-### 図2: SHAP Feature Importance（Week 3）
-![fig2](figs/fig2_shap_bar_improved.png)
-
-### 図3: グループ別スコア・公平性分析（Week 3）
-![fig3](figs/fig3_group_score_analysis.png)
-
----
-
-## 🔧 技術仕様
-
-### 環境
-
-```
-Python      >= 3.8
-scikit-learn >= 1.3.0
-xgboost     >= 2.0.0
-shap        >= 0.44.0
-numpy       >= 1.24.0
-pandas      >= 2.0.0
-matplotlib  >= 3.7.0
-seaborn     >= 0.12.0
-```
+## 技術仕様
 
 ### モデル設定
 
@@ -294,55 +229,55 @@ RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42)
 XGBClassifier(n_estimators=100, max_depth=6, learning_rate=0.1, random_state=42)
 ```
 
-### 評価指標の定義
+### 評価指標
 
 ```
-Demographic Parity (DP):  |P(Ŷ=1|A=0) − P(Ŷ=1|A=1)|
-Equal Opportunity  (EO):  |TPR(A=0)   − TPR(A=1)  |
-公平性閾値:                DP ≤ 10%, EO ≤ 10%
+Demographic Parity (DP):    |P(Ŷ=1|A=0) − P(Ŷ=1|A=1)|
+Equal Opportunity  (EO):    |TPR(A=0)   − TPR(A=1)  |
+公平性閾値:                  DP ≤ 10%, EO ≤ 10%
+```
+
+### Reweighing の重み計算
+
+```
+w(xᵢ) = P(Y=yᵢ) × P(A=aᵢ) / P(Y=yᵢ, A=aᵢ)
 ```
 
 ---
 
-## 🔄 進捗状況
+## 進捗状況
 
-| Week | テーマ | 状況 | 主な成果物 |
+| Step | テーマ | 状況 | 主な成果物 |
 |------|--------|------|-----------|
-| **Week 1** | ベースライン構築 | ✅ 完了 | `baseline_results_corrected.csv` |
-| **Week 2** | モデル比較・CV | ✅ 完了 | `exp_v1_summary.csv`, `exp_v1_all_folds.csv`, 図1〜3 |
-| **Week 3** | SHAP・バイアス特定 | ✅ 完了 | `shap_feature_importance.csv`, SHAP図群 |
-| **Week 4** | 最終まとめ | ⏳ 予定 | ポスター, 最終報告書 |
+| **Step 1** | データリーク修正・ベースライン | ✅ 完了 | `baseline_results.csv` |
+| **Step 2** | 3 モデル比較・5-fold CV | ✅ 完了 | `exp_v1_summary.csv` |
+| **Step 3** | SHAP・バイアス特定 | ✅ 完了 | `shap_feature_importance.csv` |
+| **Step 4** | 公平性指標詳細分析 | ✅ 完了 | `fairness_metrics.csv` |
+| **Step 5** | Reweighing 緩和手法 | ✅ 完了 | `mitigation_summary.csv` |
+| **Step 5b** | XGBoost 相互作用分析 | ✅ 完了 | `step5b_*.csv` |
+| **Step 6** | South German 汎化性検証 | ✅ 完了 | `step6_*.csv` |
 
 ---
 
-## 🎯 Week 4 予定
-
-```
-□ Reweightingによるバイアス緩和実験
-□ Age threshold感度分析（25歳 → 30歳）
-□ 最終ポスター作成
-□ 最終報告書執筆
-```
-
----
-
-## 📚 参考文献
+## 参考文献
 
 1. Hardt, M., Price, E., & Srebro, N. (2016). *Equality of opportunity in supervised learning.* NeurIPS.
-2. Verma, S., & Rubin, J. (2018). *Fairness definitions explained.* FairWare.
-3. Lundberg, S., & Lee, S. I. (2017). *A unified approach to interpreting model predictions.* NeurIPS.
-4. Kamiran, F., & Calders, T. (2012). *Data preprocessing techniques for classification without discrimination.* KAIS.
-5. [German Credit Data](https://archive.ics.uci.edu/ml/datasets/statlog+(german+credit+data)). UCI ML Repository.
+2. Kamiran, F., & Calders, T. (2012). *Data preprocessing techniques for classification without discrimination.* KAIS.
+3. Groemping, U. (2019). *South German Credit Data: Correcting a Widely Used Data Set.* Beuth University, Report 4/2019.
+4. Lundberg, S., & Lee, S. I. (2017). *A unified approach to interpreting model predictions.* NeurIPS.
+5. Barocas, S., Hardt, M., & Narayanan, A. (2019). *Fairness and Machine Learning.* fairmlbook.org.
 
 ---
 
-## 📧 連絡先
+## 連絡先
 
-**Hoang Nguyen**
-- Email: 23610252kn@stu.yamato-u.ac.jp
-- GitHub: [@23610252hoang](https://github.com/23610252hoang)
+**グエン・キム・ホアン（Hoang Nguyen）**  
+大和大学 情報学部 4 年  
+指導教員: 池田教授  
+Email: 23610252kn@stu.yamato-u.ac.jp  
+GitHub: [@23610252hoang](https://github.com/23610252hoang)
 
 ---
 
-**最終更新:** 2026年2月  
-**ステータス:** Week 3 完了 ✅ | Week 4 進行中 🔄
+**最終更新:** 2026年5月  
+**ステータス:** Step 6 完了 ✅ | 論文執筆中

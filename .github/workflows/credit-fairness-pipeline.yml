@@ -1,0 +1,64 @@
+name: Credit Fairness Analysis - CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop, improve/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  data-prep:
+    name: Data Preparation Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install & prepare data
+        run: |
+          pip install -r requirements.txt
+          python scripts/fix_data.py
+
+  experiments:
+    name: Main Experiment (3 Models × 5-Fold CV)
+    runs-on: ubuntu-latest
+    needs: data-prep
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Run experiments
+        run: |
+          pip install -r requirements.txt
+          python scripts/run_experiment.py
+
+  shap-analysis:
+    name: SHAP Analysis
+    runs-on: ubuntu-latest
+    needs: experiments
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Run SHAP analysis
+        run: |
+          pip install -r requirements.txt
+          python scripts/week3_shap_analysis.py
+
+  report:
+    name: Workflow Summary
+    runs-on: ubuntu-latest
+    needs: [experiments, shap-analysis]
+    if: always()
+    steps:
+      - name: Summary
+        run: |
+          echo "✅ Credit Fairness CI/CD Pipeline Completed"

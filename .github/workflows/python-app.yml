@@ -1,0 +1,21 @@
+name: Research portfolio CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile research scripts
+        run: python -m compileall scripts
+      - name: Verify portfolio artifacts
+        run: |
+          test -f docs/企業向け要約.md
+          test -f docs/面接用説明.md
+          test -f results/exp_v1_summary.csv

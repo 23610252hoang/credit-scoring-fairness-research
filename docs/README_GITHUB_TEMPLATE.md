@@ -147,7 +147,7 @@ Week 2 (5-fold CV):  DP_Age = 5.0%
 ## 📂 ディレクトリ構造
 
 ```
-hoang-credut-fairness-2026/
+credit-scoring-fairness-research/
 ├── README.md                           ← このファイル
 ├── requirements.txt                    ← 依存ライブラリ
 ├── .gitignore

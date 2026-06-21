@@ -6,10 +6,10 @@
 **期間:** 2026年2月 〜 2026年5月
 
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
-[![Research portfolio CI](https://github.com/23610252hoang/hoang-credut-fairness-2026/actions/workflows/python-app.yml/badge.svg)](https://github.com/23610252hoang/hoang-credut-fairness-2026/actions/workflows/python-app.yml)
+[![Research portfolio CI](https://github.com/23610252hoang/credit-scoring-fairness-research/actions/workflows/python-app.yml/badge.svg)](https://github.com/23610252hoang/credit-scoring-fairness-research/actions/workflows/python-app.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/進捗-Step%206%20完了-brightgreen.svg)]()
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-black.svg)](https://github.com/23610252hoang/hoang-credut-fairness-2026)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-black.svg)](https://github.com/23610252hoang/credit-scoring-fairness-research)
 
 ---
 
@@ -34,8 +34,8 @@
 
 ```bash
 # 1. クローン
-git clone https://github.com/23610252hoang/hoang-credut-fairness-2026.git
-cd hoang-credut-fairness-2026
+git clone https://github.com/23610252hoang/credit-scoring-fairness-research.git
+cd credit-scoring-fairness-research
 
 # 2. 環境構築
 conda create -n credit python=3.11
@@ -228,7 +228,7 @@ cat results/exp_v1_summary.csv
 ## 📂 ファイル構成
 
 ```
-hoang-credut-fairness-2026/
+credit-scoring-fairness-research/
 ├── README.md                          ← このファイル
 ├── INSTALL.md                         ← セットアップ手順
 ├── LICENSE                            ← Academic License
@@ -285,7 +285,7 @@ hoang-credut-fairness-2026/
 - 🏫 所属: 大和大学 情報学部
 - 👨‍🏫 指導教員: 池田教授
 
-**GitHub Repository:** https://github.com/23610252hoang/hoang-credut-fairness-2026
+**GitHub Repository:** https://github.com/23610252hoang/credit-scoring-fairness-research
 
 ---
 

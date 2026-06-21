@@ -412,8 +412,8 @@ plt.show()
 
 ```bash
 # GitHub から全図をダウンロード
-git clone https://github.com/23610252hoang/hoang-credut-fairness-2026.git
-cd hoang-credut-fairness-2026
+git clone https://github.com/23610252hoang/credit-scoring-fairness-research.git
+cd credit-scoring-fairness-research
 
 # figs/ ディレクトリに全グラフが格納
 ls -la figs/
